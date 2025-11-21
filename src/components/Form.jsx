@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const BACKEND_URL = "https://kongila-pre-backend.vercel.app";
+const BACKEND_URL = "https://kongila-pre-backend.onrender.com";
 
 const countries = [
   { code: "+234", name: "Nigeria" },
