@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-const BACKEND_URL = "https://kongila-pre-backend.onrender.com";
-
 const AdminDashboard = () => {
   const [leads, setLeads] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -23,7 +21,7 @@ const AdminDashboard = () => {
   const fetchLeads = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${BACKEND_URL}/api/leads`); // make sure this matches your backend
+      const res = await fetch("/api/leads/admin"); // make sure this matches your backend
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const data = await res.json();
       console.log("Fetched leads:", data);

@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 
-const BACKEND_URL = "https://kongila-pre-backend.onrender.com";
-
 const countries = [
   { code: "+234", name: "Nigeria" },
   { code: "+1", name: "United States" },
@@ -101,7 +99,7 @@ const Form = () => {
         userType: tab === "employer" ? "Employer" : "Talent",
       };
 
-      const res = await fetch(`${BACKEND_URL}/api/leads`, {
+      const res = await fetch("http://localhost:5000/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
