@@ -86,12 +86,10 @@ export default function Form() {
     companySize: "",
     hqLocation: "",
     website: "",
-    contactName: "",
     contactTitle: "",
-    contactEmail: "",
     contactPhone: "",
     engagementTypes: [],
-    rolesNeeded: [],
+    rolesNeeded: "",
     numberOfTalents: "",
     preferredExperience: "",
     timezone: "",
@@ -157,12 +155,10 @@ export default function Form() {
         companySize: "",
         hqLocation: "",
         website: "",
-        contactName: "",
         contactTitle: "",
-        contactEmail: "",
         contactPhone: "",
         engagementTypes: [],
-        rolesNeeded: [],
+        rolesNeeded: "",
         numberOfTalents: "",
         preferredExperience: "",
         timezone: "",
@@ -177,8 +173,6 @@ export default function Form() {
   return (
     <section className="w-full max-w-[650px] mt-12 mx-auto max-w-3xl px-4">
       <div className="bg-white shadow-lg rounded-2xl p-8 border border-gray-100">
-        <p className="text-center text-gray-600 mb-6">I am joining as...</p>
-
         {/* TABS */}
         <div className="flex justify-center mb-8">
           <div className="flex items-center gap-6 bg-gray-100 px-6 py-3 rounded-full border border-gray-300">
@@ -255,7 +249,6 @@ export default function Form() {
           {/* ===========================
               TALENT FORM
               =========================== */}
-
           {tab === "talent" && (
             <>
               {/* Phone */}
@@ -312,7 +305,7 @@ export default function Form() {
                 </select>
               </div>
 
-              {/* ✅ NEW Preferred Role */}
+              {/* Preferred Role */}
               <div>
                 <label className="text-sm font-medium text-gray-700">
                   Preferred Role Type
@@ -336,7 +329,6 @@ export default function Form() {
           {/* ===========================
               EMPLOYER FORM
               =========================== */}
-
           {tab === "employer" && (
             <>
               {/* Company Name */}
@@ -393,7 +385,7 @@ export default function Form() {
                 </select>
               </div>
 
-              {/* Location */}
+              {/* Headquarters Location */}
               <div>
                 <label className="text-sm font-medium text-gray-700">
                   Headquarters Location
@@ -421,20 +413,7 @@ export default function Form() {
                 />
               </div>
 
-              {/* Contact Info */}
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Contact Person Full Name
-                </label>
-                <input
-                  name="contactName"
-                  value={form.contactName}
-                  onChange={handleChange}
-                  placeholder="John Doe"
-                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
-                />
-              </div>
-
+              {/* Contact Job Title */}
               <div>
                 <label className="text-sm font-medium text-gray-700">
                   Job Title
@@ -448,20 +427,7 @@ export default function Form() {
                 />
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Contact Email
-                </label>
-                <input
-                  name="contactEmail"
-                  type="email"
-                  value={form.contactEmail}
-                  onChange={handleChange}
-                  placeholder="example@company.com"
-                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
-                />
-              </div>
-
+              {/* Contact Phone */}
               <div>
                 <label className="text-sm font-medium text-gray-700">
                   Phone Number
@@ -480,7 +446,6 @@ export default function Form() {
                 <label className="text-sm font-medium text-gray-700">
                   Type of Engagement
                 </label>
-
                 <div className="space-y-2 mt-2">
                   {[
                     "Direct Hire",
@@ -506,25 +471,18 @@ export default function Form() {
                 </div>
               </div>
 
-              {/* Roles Needed */}
+              {/* Roles & Skills Needed */}
               <div>
                 <label className="text-sm font-medium text-gray-700">
                   Roles & Skills Needed
                 </label>
                 <select
-                  multiple
                   name="rolesNeeded"
                   value={form.rolesNeeded}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      rolesNeeded: [...e.target.options]
-                        .filter((o) => o.selected)
-                        .map((o) => o.value),
-                    })
-                  }
-                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 bg-white h-32"
+                  onChange={handleChange}
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 bg-white"
                 >
+                  <option value="">Select role/skill...</option>
                   {skillSets.map((skill, i) => (
                     <option key={i} value={skill}>
                       {skill}
@@ -548,7 +506,7 @@ export default function Form() {
                 />
               </div>
 
-              {/* Experience */}
+              {/* Preferred Experience */}
               <div>
                 <label className="text-sm font-medium text-gray-700">
                   Preferred Experience Level
