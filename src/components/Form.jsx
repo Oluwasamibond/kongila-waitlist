@@ -78,6 +78,7 @@ export default function Form() {
     phone: "",
     skillSet: "",
     professionalLevel: "",
+    preferredRole: "",
 
     // Employer fields
     companyName: "",
@@ -150,6 +151,7 @@ export default function Form() {
         phone: "",
         skillSet: "",
         professionalLevel: "",
+        preferredRole: "",
 
         companyName: "",
         industry: "",
@@ -308,6 +310,25 @@ export default function Form() {
                       {lvl}
                     </option>
                   ))}
+                </select>
+              </div>
+
+              {/* ✅ NEW Preferred Role */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Preferred Role Type
+                </label>
+                <select
+                  name="preferredRole"
+                  value={form.preferredRole}
+                  onChange={handleChange}
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 bg-white"
+                >
+                  <option value="">Select preferred role...</option>
+                  <option value="Full Time">Full Time</option>
+                  <option value="Part-Time">Part-Time</option>
+                  <option value="Short Contract">Short Contract</option>
+                  <option value="Project Task">Project Task</option>
                 </select>
               </div>
             </>
