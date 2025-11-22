@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const BACKEND_URL = "https://kongila-waitlist-backend.onrender.com";
+// const BACKEND_URL = "https://kongila-waitlist-backend.onrender.com";
 
 const skillSets = [
   "Software Engineering",
@@ -76,7 +76,7 @@ export default function Form() {
 
     // Talent fields
     phone: "",
-    skillSet: "",
+    skillset: "",
     professionalLevel: "",
     preferredRole: "",
 
@@ -133,12 +133,11 @@ export default function Form() {
         userType: tab === "talent" ? "Talent" : "Employer",
       };
 
-      const res = await fetch(`${BACKEND_URL}/api/leads`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
+      const res = await fetch(`http://localhost:5000/api/leads`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload),
+});
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Submission failed.");
 
@@ -149,7 +148,7 @@ export default function Form() {
         country: "",
 
         phone: "",
-        skillSet: "",
+        skillset: "",
         professionalLevel: "",
         preferredRole: "",
 
@@ -279,8 +278,8 @@ export default function Form() {
                   Skill Set
                 </label>
                 <select
-                  name="skillSet"
-                  value={form.skillSet}
+                  name="skillset"
+                  value={form.skillset}
                   onChange={handleChange}
                   className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 bg-white"
                 >
