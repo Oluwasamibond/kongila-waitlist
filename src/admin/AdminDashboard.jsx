@@ -15,7 +15,7 @@ const AdminDashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
 
-  // Fetch all leads
+  // Fetch leads
   useEffect(() => {
     fetchLeads();
   }, []);
@@ -26,7 +26,7 @@ const AdminDashboard = () => {
       const res = await fetch(`${BACKEND_URL}/api/leads/admin`);
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const data = await res.json();
-      console.log("Fetched leads:", data);
+
       setLeads(data);
       setFiltered(data);
     } catch (err) {
@@ -36,11 +36,11 @@ const AdminDashboard = () => {
     }
   };
 
-  // Filter, search, sort
+  // Filtering + Searching + Sorting
   useEffect(() => {
     let results = [...leads];
 
-    // Filter by userType
+    // Filter userType
     if (filter === "employer") {
       results = results.filter((l) => (l.userType || "").toLowerCase() === "employer");
     } else if (filter === "talent") {
@@ -52,13 +52,12 @@ const AdminDashboard = () => {
       const term = search.toLowerCase();
       results = results.filter(
         (l) =>
-          (l.firstName || "").toLowerCase().includes(term) ||
-          (l.lastName || "").toLowerCase().includes(term) ||
+          (l.fullName || "").toLowerCase().includes(term) ||
           (l.email || "").toLowerCase().includes(term)
       );
     }
 
-    // Sort
+    // Sorting
     results.sort((a, b) => {
       let valA = a[sortField];
       let valB = b[sortField];
@@ -77,7 +76,7 @@ const AdminDashboard = () => {
     });
 
     setFiltered(results);
-    setCurrentPage(1); // reset to page 1 on filter/search change
+    setCurrentPage(1);
   }, [filter, search, leads, sortField, sortOrder]);
 
   const toggleSort = (field) => {
@@ -89,10 +88,10 @@ const AdminDashboard = () => {
     }
   };
 
-  // Pagination
-  const indexOfLastUser = currentPage * usersPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = filtered.slice(indexOfFirstUser, indexOfLastUser);
+  // Pagination logic
+  const indexOfLast = currentPage * usersPerPage;
+  const indexOfFirst = indexOfLast - usersPerPage;
+  const currentUsers = filtered.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(filtered.length / usersPerPage);
 
   return (
@@ -101,7 +100,7 @@ const AdminDashboard = () => {
         Kongila Admin Dashboard
       </h1>
 
-      {/* Filters and Search */}
+      {/* Filters */}
       <div className="max-w-4xl mx-auto flex flex-wrap items-center gap-4 mb-6">
         <select
           onChange={(e) => setFilter(e.target.value)}
@@ -118,7 +117,7 @@ const AdminDashboard = () => {
           placeholder="Search by name or email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 border p-2 rounded-xl min-w-[200px]"
+          className="flex-1 border p-2 rounded-xl min-w-[220px]"
         />
       </div>
 
@@ -130,36 +129,44 @@ const AdminDashboard = () => {
           <table className="w-full text-left border-collapse">
             <thead className="bg-[#004aad] text-white">
               <tr>
-                <th className="p-3 cursor-pointer" onClick={() => toggleSort("firstName")}>
-                  Name {sortField === "firstName" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+                <th className="p-3 cursor-pointer" onClick={() => toggleSort("fullName")}>
+                  Name {sortField === "fullName" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
                 </th>
+
                 <th className="p-3">Email</th>
+
                 <th className="p-3 cursor-pointer" onClick={() => toggleSort("userType")}>
                   Type {sortField === "userType" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
                 </th>
+
                 <th className="p-3">Country</th>
-                <th className="p-3">Form Details</th>
+
+                <th className="p-3">Details</th>
+
                 <th className="p-3 cursor-pointer" onClick={() => toggleSort("createdAt")}>
                   Date {sortField === "createdAt" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
                 </th>
               </tr>
             </thead>
+
             <tbody>
               {currentUsers.length > 0 ? (
                 currentUsers.map((lead) => (
                   <tr key={lead._id} className="border-b hover:bg-gray-50">
-                    <td className="p-3">
-                      {(lead.firstName || "")} {(lead.lastName || "")}
-                    </td>
+                    <td className="p-3">{lead.fullName || "N/A"}</td>
+
                     <td className="p-3">{lead.email || "N/A"}</td>
+
                     <td className="p-3">{lead.userType || "N/A"}</td>
+
                     <td className="p-3">{lead.country || "N/A"}</td>
+
                     <td className="p-3 text-sm">
                       {lead.userType?.toLowerCase() === "employer" ? (
                         <div>
-                          <p><b>Company Name:</b> {lead.companyName || "N/A"}</p>
-                          <p><b>Company Size:</b> {lead.companySize || "N/A"}</p>
-                          <p><b>Hiring Timeline:</b> {lead.hiringTimeline || "N/A"}</p>
+                          <p><b>Company:</b> {lead.companyName || "N/A"}</p>
+                          <p><b>Size:</b> {lead.companySize || "N/A"}</p>
+                          <p><b>Timeline:</b> {lead.hiringTimeline || "N/A"}</p>
                           <p><b>Sector:</b> {lead.companySector || "N/A"}</p>
                         </div>
                       ) : (
@@ -172,6 +179,7 @@ const AdminDashboard = () => {
                         </div>
                       )}
                     </td>
+
                     <td className="p-3 text-gray-600">
                       {lead.createdAt ? new Date(lead.createdAt).toLocaleString() : "N/A"}
                     </td>

@@ -2,85 +2,118 @@ import React, { useState } from "react";
 
 const BACKEND_URL = "https://kongila-waitlist-backend.onrender.com";
 
-const countries = [
-  { code: "+234", name: "Nigeria" },
-  { code: "+1", name: "United States" },
-  { code: "+44", name: "United Kingdom" },
-  { code: "+91", name: "India" },
-  { code: "+1", name: "Canada" },
-  { code: "+49", name: "Germany" },
-  { code: "+254", name: "Kenya" },
-  { code: "+233", name: "Ghana" },
-  { code: "+27", name: "South Africa" },
-  { code: "+20", name: "Egypt" },
-  { code: "+254", name: "Kenya" },
-  { code: "+233", name: "Ghana" },
-  { code: "+244", name: "Angola" },
-  { code: "+972", name: "Israel" },
-  { code: "+60", name: "Malaysia" },
-  { code: "+966", name: "Saudi Arabia" },
-  { code: "+971", name: "United Arab Emirates" },
-  { code: "+237", name: "Cameroon" },
-  { code: "+86", name: "China" },
-  { code: "+225", name: "Côte d'Ivoire" },
-  { code: "+33", name: "France" },
-  { code: "+231", name: "Liberia" },
-  { code: "+223", name: "Mali" },
-  { code: "+212", name: "Morocco" },
-  { code: "+31", name: "Netherlands" },
-  { code: "+351", name: "Portugal" },
-  { code: "+250", name: "Rwanda" },
-  { code: "+221", name: "Senegal" },
-  { code: "+248", name: "Seychelles" },
-  { code: "+232", name: "Sierra Leone" },
-  { code: "+66", name: "Thailand" },
-  { code: "+228", name: "Togo" },
-  { code: "+216", name: "Tunisia" },
-  { code: "+256", name: "Uganda" },
+const skillSets = [
+  "Software Engineering",
+  "Software Development",
+  "Product Management",
+  "UI/UX Design",
+  "Data & Analytics",
+  "Cybersecurity",
+  "Digital Marketing",
+  "Content Writing",
+  "Virtual Assistance",
+  "Customer Support",
+  "Sales & Lead Generation",
+  "Project Management",
+  "Finance & Accounting",
+  "HR & Talent Support",
+  "Operations & Admin",
+  "Graphic Design",
+  "Video Editing",
+  "QA & Testing",
+  "DevOps / Cloud",
+  "Social Media Management",
+  "Legal & Compliance",
+  "Health Care",
+  "Research & Analytics",
+  "Others",
 ];
 
-const sectors = [
+const industries = [
   "Technology",
-  "Finance",
+  "Software Development",
+  "AI, Data Science & Analytics",
+  "Cybersecurity & Cloud Computing",
+  "Design, Creative & Multimedia",
+  "Digital Marketing & Content Creation",
+  "E-commerce & Retail",
+  "Finance & Accounting",
   "Healthcare",
   "Education",
-  "Retail",
+  "Consulting & Business Services",
+  "Human Resources",
+  "Sales & Operations",
+  "Engineering",
+  "Media & Entertainment",
+  "Construction",
   "Manufacturing",
-  "Marketing",
+  "Power & Energy",
   "Other",
 ];
 
-const Form = () => {
-  const [tab, setTab] = useState("employer");
+const experienceLevels = [
+  "Intern",
+  "Entry-Level",
+  "Mid-Level",
+  "Senior",
+  "Expert",
+  "Specialist",
+  "Executive",
+];
+
+const hiringTimelineOptions = ["1–3 months", "4–6 months", "7–12 months"];
+
+const companySizes = ["1–10", "11–50", "51–200", "201–500", "500+"];
+
+export default function Form() {
+  const [tab, setTab] = useState("talent");
 
   const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
+    // Shared fields
+    fullName: "",
     email: "",
     country: "",
-    companySector: "",
-    companyName: "",
-    companySize: "",
-    hiringTimeline: "",
 
-    // talent fields
-    phoneCode: "",
-    phoneNumber: "",
-    competency: "",
-    role: "",
-    whatsappUpdates: false,
+    // Talent fields
+    phone: "",
+    skillSet: "",
+    professionalLevel: "",
+
+    // Employer fields
+    companyName: "",
+    industry: "",
+    companySize: "",
+    hqLocation: "",
+    website: "",
+    contactName: "",
+    contactTitle: "",
+    contactEmail: "",
+    contactPhone: "",
+    engagementTypes: [],
+    rolesNeeded: [],
+    numberOfTalents: "",
+    preferredExperience: "",
+    timezone: "",
+    hiringTimeline: "",
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [error, setError] = useState(null);
 
   function handleChange(e) {
-    const { name, value, type, checked } = e.target;
-    setForm((s) => ({
-      ...s,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    let { name, value, type, checked } = e.target;
+
+    // Multi-select for checkboxes
+    if (type === "checkbox" && name === "engagementTypes") {
+      const updated = checked
+        ? [...form.engagementTypes, value]
+        : form.engagementTypes.filter((v) => v !== value);
+
+      return setForm({ ...form, engagementTypes: updated });
+    }
+
+    setForm({ ...form, [name]: value });
   }
 
   async function handleSubmit(e) {
@@ -88,17 +121,15 @@ const Form = () => {
     setError(null);
     setSuccess(null);
 
-    if (!form.firstName || !form.lastName || !form.email) {
-      setError("Please fill first name, last name and email.");
-      return;
+    if (!form.fullName || !form.email) {
+      return setError("Full Name and Email are required.");
     }
 
     setLoading(true);
-
     try {
       const payload = {
         ...form,
-        userType: tab === "employer" ? "Employer" : "Talent",
+        userType: tab === "talent" ? "Talent" : "Employer",
       };
 
       const res = await fetch(`${BACKEND_URL}/api/leads`, {
@@ -108,310 +139,463 @@ const Form = () => {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to submit");
+      if (!res.ok) throw new Error(data.message || "Submission failed.");
 
       setSuccess("You're on the waitlist 🚀");
-
       setForm({
-        firstName: "",
-        lastName: "",
+        fullName: "",
         email: "",
         country: "",
-        companySector: "",
+
+        phone: "",
+        skillSet: "",
+        professionalLevel: "",
+
         companyName: "",
+        industry: "",
         companySize: "",
+        hqLocation: "",
+        website: "",
+        contactName: "",
+        contactTitle: "",
+        contactEmail: "",
+        contactPhone: "",
+        engagementTypes: [],
+        rolesNeeded: [],
+        numberOfTalents: "",
+        preferredExperience: "",
+        timezone: "",
         hiringTimeline: "",
-        phoneCode: "",
-        phoneNumber: "",
-        competency: "",
-        role: "",
-        whatsappUpdates: false,
       });
     } catch (err) {
       setError(err.message);
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   }
 
   return (
-    <section className="mt-12 mx-auto max-w-3xl px-4">
+    <section className="w-full max-w-[650px] mt-12 mx-auto max-w-3xl px-4">
       <div className="bg-white shadow-lg rounded-2xl p-8 border border-gray-100">
-        <p className="text-center text-gray-600 mb-6">
-          I am primarily interested as a ...
-        </p>
+        <p className="text-center text-gray-600 mb-6">I am joining as...</p>
 
-        {/* Tabs */}
-        <div className="flex justify-center mb-6 gap-6 border border-gray-300 rounded-2xl p-1">
-          <div
-            onClick={() => setTab("employer")}
-            className={`flex-1 cursor-pointer rounded-xl py-4 text-center transition ${
-              tab === "employer"
-                ? "bg-[#004aad] text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            <p className="font-semibold text-lg">Employer</p>
-            <p className="text-sm mt-1">Looking to hire</p>
-          </div>
+        {/* TABS */}
+        <div className="flex justify-center mb-8">
+          <div className="flex items-center gap-6 bg-gray-100 px-6 py-3 rounded-full border border-gray-300">
+            {/* TALENT */}
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="userType"
+                value="talent"
+                checked={tab === "talent"}
+                onChange={() => setTab("talent")}
+                className="h-5 w-5 text-[#004aad] accent-[#004aad] cursor-pointer"
+              />
+              <span className="text-gray-800 font-medium">I am a Talent</span>
+            </label>
 
-          <div
-            onClick={() => setTab("talent")}
-            className={`flex-1 cursor-pointer rounded-xl py-4 text-center transition ${
-              tab === "talent"
-                ? "bg-[#004aad] text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            <p className="font-semibold text-lg">Talent</p>
-            <p className="text-sm mt-1">Seeking opportunities</p>
+            {/* EMPLOYER */}
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="userType"
+                value="employer"
+                checked={tab === "employer"}
+                onChange={() => setTab("employer")}
+                className="h-5 w-5 text-[#004aad] accent-[#004aad] cursor-pointer"
+              />
+              <span className="text-gray-800 font-medium">
+                I am an Employer
+              </span>
+            </label>
           </div>
         </div>
 
-        {/* FORM */}
-        <form onSubmit={handleSubmit} className="mt-6 space-y-6">
-          {/* Names */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                First Name
-              </label>
-              <input
-                name="firstName"
-                value={form.firstName}
-                onChange={handleChange}
-                placeholder="First Name"
-                className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#004aad]"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Last Name
-              </label>
-              <input
-                name="lastName"
-                value={form.lastName}
-                onChange={handleChange}
-                placeholder="Last Name"
-                className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#004aad]"
-              />
-            </div>
-          </div>
-
-          {/* Email */}
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          {/* FULL NAME */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Email Address
+            <label className="text-sm font-medium text-gray-700">
+              Full Name
             </label>
             <input
-              name="email"
-              value={form.email}
+              name="fullName"
+              value={form.fullName}
               onChange={handleChange}
-              type="email"
-              placeholder="Email Address"
-              className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#004aad]"
+              placeholder="Enter your full name"
+              className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
             />
           </div>
 
-          {/* Country */}
+          {/* EMAIL */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Country
-            </label>
-            <select
+            <label className="text-sm font-medium text-gray-700">Email</label>
+            <input
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+              className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
+            />
+          </div>
+
+          {/* COUNTRY */}
+          <div>
+            <label className="text-sm font-medium text-gray-700">Country</label>
+            <input
               name="country"
               value={form.country}
               onChange={handleChange}
-              className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 bg-white focus:ring-2 focus:ring-[#004aad]"
-            >
-              <option value="">Select your country...</option>
-              {countries.map((c, i) => (
-                <option key={i} value={`${c.name} (${c.code})`}>
-                  {c.name} ({c.code})
-                </option>
-              ))}
-            </select>
+              placeholder="Nigeria, United States..."
+              className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
+            />
           </div>
 
-          {/* Sector */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Your Sector / Company Sector
-            </label>
-            <select
-              name="companySector"
-              value={form.companySector}
-              onChange={handleChange}
-              className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 bg-white focus:ring-2 focus:ring-[#004aad]"
-            >
-              <option value="">Select your industry...</option>
-              {sectors.map((s, i) => (
-                <option key={i} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* ===========================
+              TALENT FORM
+              =========================== */}
 
-          {/* EMPLOYER FIELDS */}
+          {tab === "talent" && (
+            <>
+              {/* Phone */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Phone Number
+                </label>
+                <input
+                  name="phone"
+                  value={form.phone}
+                  onChange={handleChange}
+                  placeholder="+234 800 000 0000"
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
+                />
+              </div>
+
+              {/* Skill Set */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Skill Set
+                </label>
+                <select
+                  name="skillSet"
+                  value={form.skillSet}
+                  onChange={handleChange}
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 bg-white"
+                >
+                  <option value="">Select your skill...</option>
+                  {skillSets.map((skill, i) => (
+                    <option key={i} value={skill}>
+                      {skill}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Professional Level */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Professional Level
+                </label>
+                <select
+                  name="professionalLevel"
+                  value={form.professionalLevel}
+                  onChange={handleChange}
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 bg-white"
+                >
+                  <option value="">Select level...</option>
+                  {experienceLevels.map((lvl, i) => (
+                    <option key={i} value={lvl}>
+                      {lvl}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
+          )}
+
+          {/* ===========================
+              EMPLOYER FORM
+              =========================== */}
+
           {tab === "employer" && (
             <>
               {/* Company Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-gray-700">
                   Company Name
                 </label>
                 <input
                   name="companyName"
                   value={form.companyName}
                   onChange={handleChange}
-                  placeholder="Enter company name"
-                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#004aad]"
+                  placeholder="Tech Solutions Ltd"
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
                 />
+              </div>
+
+              {/* Industry */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Industry / Sector
+                </label>
+                <select
+                  name="industry"
+                  value={form.industry}
+                  onChange={handleChange}
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 bg-white"
+                >
+                  <option value="">Select industry...</option>
+                  {industries.map((i, idx) => (
+                    <option key={idx} value={i}>
+                      {i}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Company Size */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-gray-700">
                   Company Size
                 </label>
                 <select
                   name="companySize"
                   value={form.companySize}
                   onChange={handleChange}
-                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 bg-white focus:ring-2 focus:ring-[#004aad]"
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 bg-white"
                 >
                   <option value="">Select size...</option>
-                  <option value="1-10">1–10 employees</option>
-                  <option value="11-50">11–50 employees</option>
-                  <option value="51-200">51–200 employees</option>
-                  <option value="200+">200+ employees</option>
+                  {companySizes.map((s, i) => (
+                    <option key={i} value={s}>
+                      {s}
+                    </option>
+                  ))}
                 </select>
+              </div>
+
+              {/* Location */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Headquarters Location
+                </label>
+                <input
+                  name="hqLocation"
+                  value={form.hqLocation}
+                  onChange={handleChange}
+                  placeholder="City, Country"
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
+                />
+              </div>
+
+              {/* Website */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Company Website
+                </label>
+                <input
+                  name="website"
+                  value={form.website}
+                  onChange={handleChange}
+                  placeholder="https://example.com"
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
+                />
+              </div>
+
+              {/* Contact Info */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Contact Person Full Name
+                </label>
+                <input
+                  name="contactName"
+                  value={form.contactName}
+                  onChange={handleChange}
+                  placeholder="John Doe"
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Job Title
+                </label>
+                <input
+                  name="contactTitle"
+                  value={form.contactTitle}
+                  onChange={handleChange}
+                  placeholder="HR Manager, CTO, Founder"
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Contact Email
+                </label>
+                <input
+                  name="contactEmail"
+                  type="email"
+                  value={form.contactEmail}
+                  onChange={handleChange}
+                  placeholder="example@company.com"
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Phone Number
+                </label>
+                <input
+                  name="contactPhone"
+                  value={form.contactPhone}
+                  onChange={handleChange}
+                  placeholder="+234 800 000 0000"
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
+                />
+              </div>
+
+              {/* Engagement Types */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Type of Engagement
+                </label>
+
+                <div className="space-y-2 mt-2">
+                  {[
+                    "Direct Hire",
+                    "Outsourcing",
+                    "Short-Term Project",
+                    "Contract Management",
+                  ].map((type, i) => (
+                    <label
+                      key={i}
+                      className="flex items-center gap-2 text-gray-700"
+                    >
+                      <input
+                        type="checkbox"
+                        name="engagementTypes"
+                        value={type}
+                        checked={form.engagementTypes.includes(type)}
+                        onChange={handleChange}
+                        className="w-4 h-4"
+                      />
+                      {type}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Roles Needed */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Roles & Skills Needed
+                </label>
+                <select
+                  multiple
+                  name="rolesNeeded"
+                  value={form.rolesNeeded}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      rolesNeeded: [...e.target.options]
+                        .filter((o) => o.selected)
+                        .map((o) => o.value),
+                    })
+                  }
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 bg-white h-32"
+                >
+                  {skillSets.map((skill, i) => (
+                    <option key={i} value={skill}>
+                      {skill}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Number of Talents */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Number of Talents Needed
+                </label>
+                <input
+                  type="number"
+                  name="numberOfTalents"
+                  value={form.numberOfTalents}
+                  onChange={handleChange}
+                  placeholder="e.g. 5"
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
+                />
+              </div>
+
+              {/* Experience */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Preferred Experience Level
+                </label>
+                <select
+                  name="preferredExperience"
+                  value={form.preferredExperience}
+                  onChange={handleChange}
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 bg-white"
+                >
+                  <option value="">Select level...</option>
+                  {experienceLevels.map((lvl, i) => (
+                    <option key={i} value={lvl}>
+                      {lvl}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Timezone */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Preferred Timezone / Location
+                </label>
+                <input
+                  name="timezone"
+                  value={form.timezone}
+                  onChange={handleChange}
+                  placeholder="Optional"
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
+                />
               </div>
 
               {/* Hiring Timeline */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-gray-700">
                   Hiring Timeline
                 </label>
                 <select
                   name="hiringTimeline"
                   value={form.hiringTimeline}
                   onChange={handleChange}
-                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 bg-white focus:ring-2 focus:ring-[#004aad]"
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 bg-white"
                 >
-                  <option value="">When do you plan to hire?</option>
-                  <option value="Immediately">Immediately</option>
-                  <option value="1-3 months">1–3 months</option>
-                  <option value="3-6 months">3–6 months</option>
-                  <option value="Not sure yet">Not sure yet</option>
+                  <option value="">Select timeline...</option>
+                  {hiringTimelineOptions.map((opt, i) => (
+                    <option key={i} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
                 </select>
               </div>
             </>
           )}
 
-          {/* TALENT FIELDS */}
-          {tab === "talent" && (
-            <>
-              {/* Phone Number */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Phone Number
-                </label>
-
-                <div className="flex gap-3 mt-1">
-                  <select
-                    name="phoneCode"
-                    value={form.phoneCode}
-                    onChange={handleChange}
-                    className="w-32 border border-gray-300 rounded-xl px-3 py-3 bg-white focus:ring-2 focus:ring-[#004aad]"
-                  >
-                    <option value="">Code</option>
-                    {countries.map((c, i) => (
-                      <option key={i} value={c.code}>
-                        {c.code}
-                      </option>
-                    ))}
-                  </select>
-
-                  <input
-                    name="phoneNumber"
-                    value={form.phoneNumber}
-                    onChange={handleChange}
-                    placeholder="Phone number"
-                    className="flex-1 border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#004aad]"
-                  />
-                </div>
-
-                {/* WhatsApp checkbox */}
-                <label className="flex items-center gap-2 mt-2 text-sm text-gray-700 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    name="whatsappUpdates"
-                    checked={form.whatsappUpdates}
-                    onChange={handleChange}
-                    className="h-4 w-4 rounded border-gray-300"
-                  />
-                  Send me updates via WhatsApp
-                </label>
-              </div>
-
-              {/* Competency Level */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Level of Competency
-                </label>
-                <select
-                  name="competency"
-                  value={form.competency}
-                  onChange={handleChange}
-                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 bg-white focus:ring-2 focus:ring-[#004aad]"
-                >
-                  <option value="">Select your level...</option>
-                  <option value="Executive">Executive</option>
-                  <option value="Senior Management">Senior Management</option>
-                  <option value="Mid-Level">Mid-Level</option>
-                  <option value="Entry Level">Entry Level</option>
-                </select>
-              </div>
-
-              {/* Role */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Your Role
-                </label>
-                <input
-                  name="role"
-                  value={form.role}
-                  onChange={handleChange}
-                  placeholder="e.g. Product Manager, Software Engineer"
-                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#004aad]"
-                />
-              </div>
-            </>
-          )}
-
-          {/* SUBMIT BUTTON */}
+          {/* Submit */}
           <button
-            type="submit"
             disabled={loading}
             className="w-full bg-[#004aad] text-white py-3 rounded-xl font-medium hover:opacity-90 transition disabled:opacity-60"
           >
-            {loading
-              ? "Submitting..."
-              : tab === "employer"
-              ? "Notify me when you launch"
-              : "Join as talent"}
+            {loading ? "Submitting..." : "Submit"}
           </button>
 
-          {/* FEEDBACK */}
-          {error && <p className="text-red-600 text-center">{error}</p>}
-          {success && <p className="text-green-600 text-center">{success}</p>}
+          {error && <p className="text-center text-red-600">{error}</p>}
+          {success && <p className="text-center text-green-600">{success}</p>}
         </form>
       </div>
     </section>
   );
-};
-
-export default Form;
+}
