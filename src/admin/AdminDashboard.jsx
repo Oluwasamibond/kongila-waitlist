@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-// const BACKEND_URL = "https://kongila-waitlist-backend.onrender.com";
+const BACKEND_URL = "https://kongila-waitlist-backend.onrender.com";
 
 const AdminDashboard = () => {
   const [leads, setLeads] = useState([]);
@@ -23,7 +23,7 @@ const AdminDashboard = () => {
   const fetchLeads = async () => {
     try {
       setLoading(true);
-     const res = await fetch(`http://localhost:5000/api/leads/admin`);
+      const res = await fetch(`${BACKEND_URL}/api/leads/admin`);
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const data = await res.json();
 
@@ -129,17 +129,41 @@ const AdminDashboard = () => {
           <table className="w-full text-left border-collapse">
             <thead className="bg-[#004aad] text-white">
               <tr>
-                <th className="p-3 cursor-pointer" onClick={() => toggleSort("fullName")}>
-                  Name {sortField === "fullName" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+                <th
+                  className="p-3 cursor-pointer"
+                  onClick={() => toggleSort("fullName")}
+                >
+                  Name{" "}
+                  {sortField === "fullName"
+                    ? sortOrder === "asc"
+                      ? "▲"
+                      : "▼"
+                    : ""}
                 </th>
                 <th className="p-3">Email</th>
-                <th className="p-3 cursor-pointer" onClick={() => toggleSort("userType")}>
-                  Type {sortField === "userType" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+                <th
+                  className="p-3 cursor-pointer"
+                  onClick={() => toggleSort("userType")}
+                >
+                  Type{" "}
+                  {sortField === "userType"
+                    ? sortOrder === "asc"
+                      ? "▲"
+                      : "▼"
+                    : ""}
                 </th>
                 <th className="p-3">Country</th>
                 <th className="p-3">Details</th>
-                <th className="p-3 cursor-pointer" onClick={() => toggleSort("createdAt")}>
-                  Date {sortField === "createdAt" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+                <th
+                  className="p-3 cursor-pointer"
+                  onClick={() => toggleSort("createdAt")}
+                >
+                  Date{" "}
+                  {sortField === "createdAt"
+                    ? sortOrder === "asc"
+                      ? "▲"
+                      : "▼"
+                    : ""}
                 </th>
               </tr>
             </thead>
@@ -157,30 +181,63 @@ const AdminDashboard = () => {
                     <td className="p-3 text-sm">
                       {lead.userType?.toLowerCase() === "employer" ? (
                         <div>
-                          <p><b>Company:</b> {lead.companyName || "N/A"}</p>
-                          <p><b>Industry:</b> {lead.industry || "N/A"}</p>
-                          <p><b>Company Size:</b> {lead.companySize || "N/A"}</p>
-                          <p><b>Website:</b> {lead.website || "N/A"}</p>
-                          <p><b>Contact Name:</b> {lead.contactName || "N/A"}</p>
-                          <p><b>Job Title:</b> {lead.contactJobTitle || "N/A"}</p>
-                          <p><b>Contact Email:</b> {lead.contactEmail || "N/A"}</p>
-                          <p><b>Phone:</b> {lead.contactPhone || "N/A"}</p>
-                          <p><b>Needed Talents:</b> {lead.numberOfTalents || "N/A"}</p>
-                          <p><b>Timezone:</b> {lead.preferredTimezone || "N/A"}</p>
-                          <p><b>Timeline:</b> {lead.hiringTimeline || "N/A"}</p>
+                          <p>
+                            <b>Company:</b> {lead.companyName || "N/A"}
+                          </p>
+                          <p>
+                            <b>Industry:</b> {lead.industry || "N/A"}
+                          </p>
+                          <p>
+                            <b>Company Size:</b> {lead.companySize || "N/A"}
+                          </p>
+                          <p>
+                            <b>Website:</b> {lead.website || "N/A"}
+                          </p>
+                          <p>
+                            <b>Contact Name:</b> {lead.contactName || "N/A"}
+                          </p>
+                          <p>
+                            <b>Job Title:</b> {lead.contactJobTitle || "N/A"}
+                          </p>
+                          <p>
+                            <b>Contact Email:</b> {lead.contactEmail || "N/A"}
+                          </p>
+                          <p>
+                            <b>Phone:</b> {lead.contactPhone || "N/A"}
+                          </p>
+                          <p>
+                            <b>Needed Talents:</b>{" "}
+                            {lead.numberOfTalents || "N/A"}
+                          </p>
+                          <p>
+                            <b>Timezone:</b> {lead.preferredTimezone || "N/A"}
+                          </p>
+                          <p>
+                            <b>Timeline:</b> {lead.hiringTimeline || "N/A"}
+                          </p>
                         </div>
                       ) : (
                         <div>
-                          <p><b>Skillset:</b> {lead.skillset || "N/A"}</p>
-                          <p><b>Level:</b> {lead.professionalLevel || "N/A"}</p>
-                          <p><b>Preferred Role:</b> {lead.preferredRole || "N/A"}</p>
-                          <p><b>Phone:</b> {lead.phone || "N/A"}</p>
+                          <p>
+                            <b>Skillset:</b> {lead.skillset || "N/A"}
+                          </p>
+                          <p>
+                            <b>Level:</b> {lead.professionalLevel || "N/A"}
+                          </p>
+                          <p>
+                            <b>Preferred Role:</b> {lead.preferredRole || "N/A"}
+                          </p>
+                          <p>
+                            <b>Phone:</b> {lead.phone || "N/A"}
+                          </p>
                         </div>
                       )}
                     </td>
 
                     <td className="p-3 text-gray-600">
-                      {lead.createdAt ? new Date(lead.createdAt).toLocaleString() : "N/A"}
+                      {lead.createdAt
+                        ? new Date(lead.createdAt).toLocaleString()
+                        : "N/A"}
                     </td>
                   </tr>
                 ))
@@ -202,7 +259,9 @@ const AdminDashboard = () => {
                   key={i + 1}
                   onClick={() => setCurrentPage(i + 1)}
                   className={`px-3 py-1 border rounded ${
-                    currentPage === i + 1 ? "bg-[#004aad] text-white" : "bg-white"
+                    currentPage === i + 1
+                      ? "bg-[#004aad] text-white"
+                      : "bg-white"
                   }`}
                 >
                   {i + 1}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-// const BACKEND_URL = "https://kongila-waitlist-backend.onrender.com";
+const BACKEND_URL = "https://kongila-waitlist-backend.onrender.com";
 
 const skillSets = [
   "Software Engineering",
@@ -133,11 +133,11 @@ export default function Form() {
         userType: tab === "talent" ? "Talent" : "Employer",
       };
 
-      const res = await fetch(`http://localhost:5000/api/leads`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(payload),
-});
+      const res = await fetch(`${BACKEND_URL}/api/leads`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Submission failed.");
 
