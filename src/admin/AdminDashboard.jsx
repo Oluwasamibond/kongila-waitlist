@@ -194,13 +194,7 @@ const AdminDashboard = () => {
                             <b>Website:</b> {lead.website || "N/A"}
                           </p>
                           <p>
-                            <b>Contact Name:</b> {lead.contactName || "N/A"}
-                          </p>
-                          <p>
                             <b>Job Title:</b> {lead.contactJobTitle || "N/A"}
-                          </p>
-                          <p>
-                            <b>Contact Email:</b> {lead.contactEmail || "N/A"}
                           </p>
                           <p>
                             <b>Phone:</b> {lead.contactPhone || "N/A"}
