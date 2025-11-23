@@ -331,6 +331,34 @@ export default function Form() {
               =========================== */}
           {tab === "employer" && (
             <>
+              {/* Contact Job Title */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Job Title
+                </label>
+                <input
+                  name="contactTitle"
+                  value={form.contactTitle}
+                  onChange={handleChange}
+                  placeholder="HR Manager, CTO, Founder"
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
+                />
+              </div>
+
+              {/* Contact Phone */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Phone Number
+                </label>
+                <input
+                  name="contactPhone"
+                  value={form.contactPhone}
+                  onChange={handleChange}
+                  placeholder="+234 800 000 0000"
+                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
+                />
+              </div>
+
               {/* Company Name */}
               <div>
                 <label className="text-sm font-medium text-gray-700">
@@ -409,34 +437,6 @@ export default function Form() {
                   value={form.website}
                   onChange={handleChange}
                   placeholder="https://example.com"
-                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
-                />
-              </div>
-
-              {/* Contact Job Title */}
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Job Title
-                </label>
-                <input
-                  name="contactTitle"
-                  value={form.contactTitle}
-                  onChange={handleChange}
-                  placeholder="HR Manager, CTO, Founder"
-                  className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
-                />
-              </div>
-
-              {/* Contact Phone */}
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Phone Number
-                </label>
-                <input
-                  name="contactPhone"
-                  value={form.contactPhone}
-                  onChange={handleChange}
-                  placeholder="+234 800 000 0000"
                   className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3"
                 />
               </div>
